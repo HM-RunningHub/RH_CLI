@@ -2,7 +2,7 @@
 
 RH CLI is a modern command line interface for RunningHub standard model APIs and AI Applications.
 
-It is extracted from RHClaw, but it does not require OpenClaw. You can configure credentials, choose curated models, submit tasks, poll results, download outputs, and script everything directly from your terminal.
+You can configure credentials, choose curated models, submit tasks, poll results, download outputs, and script everything directly from your terminal.
 
 ## Quick Start
 
