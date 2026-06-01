@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 import httpx
@@ -10,6 +11,19 @@ from .errors import RhCliError, classify_api_error
 API_HOST = "https://www.runninghub.cn"
 BASE_URL = f"{API_HOST}/openapi/v2"
 ACCOUNT_STATUS_URL = f"{API_HOST}/uc/openapi/accountStatus"
+
+_SECRET_PATTERNS = (
+    re.compile(r"(api[_-]?[kK]ey=)[^&\s]+"),
+    re.compile(r"(Bearer\s+)[A-Za-z0-9._-]+"),
+)
+
+
+def mask_secret(text: str) -> str:
+    """Redact API keys/tokens that may appear in URLs or error messages."""
+    masked = text
+    for pattern in _SECRET_PATTERNS:
+        masked = pattern.sub(r"\1****", masked)
+    return masked
 
 
 class RhHttpClient:
@@ -49,17 +63,29 @@ class RhHttpClient:
                 timeout=timeout or self.timeout,
             )
         except httpx.HTTPError as exc:
-            raise RhCliError("API_ERROR", f"网络请求失败：{exc}") from exc
+            raise RhCliError("API_ERROR", f"网络请求失败：{mask_secret(str(exc))}") from exc
 
         if response.status_code >= 400:
             raise self._error_from_response(response)
         return self._json_response(response)
 
-    def get_json(self, url: str, *, timeout: float | None = None) -> dict[str, Any]:
+    def get_json(
+        self,
+        url: str,
+        *,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        timeout: float | None = None,
+    ) -> dict[str, Any]:
         try:
-            response = self._client.get(url, timeout=timeout or self.timeout)
+            response = self._client.get(
+                url,
+                params=params,
+                headers=headers,
+                timeout=timeout or self.timeout,
+            )
         except httpx.HTTPError as exc:
-            raise RhCliError("API_ERROR", f"网络请求失败：{exc}") from exc
+            raise RhCliError("API_ERROR", f"网络请求失败：{mask_secret(str(exc))}") from exc
         if response.status_code >= 400:
             raise self._error_from_response(response)
         return self._json_response(response)

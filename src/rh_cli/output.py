@@ -61,7 +61,7 @@ def resolve_output_path(
 
 def print_result(console: Console, result: RunResult, *, json_output: bool = False) -> None:
     if json_output:
-        console.print(json.dumps(result.to_dict(), ensure_ascii=True, indent=2))
+        console.print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
         return
     for text in result.texts:
         console.print(text)

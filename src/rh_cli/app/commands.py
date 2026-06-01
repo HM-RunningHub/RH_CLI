@@ -50,7 +50,7 @@ def list_command(
         "apps": apps,
     }
     if state.json_output:
-        state.out.print(json.dumps(output, ensure_ascii=True, indent=2))
+        state.out.print(json.dumps(output, ensure_ascii=False, indent=2))
         return
 
     table = Table(title=f"AI Apps ({output['total']})")
@@ -68,7 +68,7 @@ def info_command(ctx: typer.Context, webapp: str = typer.Argument(..., help="web
     webapp_id = parse_webapp_id(webapp)
     nodes = get_node_info(api_key_arg=state.api_key, webapp_id_or_url=webapp_id)
     if state.json_output:
-        state.out.print(json.dumps({"webappId": webapp_id, "nodeCount": len(nodes), "nodes": nodes}, ensure_ascii=True, indent=2))
+        state.out.print(json.dumps({"webappId": webapp_id, "nodeCount": len(nodes), "nodes": nodes}, ensure_ascii=False, indent=2))
         return
 
     table = Table(title=f"AI App Nodes ({webapp_id})")

@@ -32,7 +32,7 @@ def list_models(
     state = _state(ctx)
     endpoints = list_endpoints(output_type=output_type, task=task)
     if state.json_output:
-        state.out.print(json.dumps({"total": len(endpoints), "endpoints": endpoints}, ensure_ascii=True, indent=2))
+        state.out.print(json.dumps({"total": len(endpoints), "endpoints": endpoints}, ensure_ascii=False, indent=2))
         return
 
     table = Table(title=f"RunningHub Endpoints ({len(endpoints)})")
@@ -59,7 +59,7 @@ def info(ctx: typer.Context, endpoint: str = typer.Argument(..., help="端点 ID
     endpoint_def = find_endpoint(endpoint)
     if not endpoint_def:
         raise RhCliError("ENDPOINT_NOT_FOUND", f"找不到端点：{endpoint}")
-    state.out.print(json.dumps(endpoint_def, ensure_ascii=True, indent=2))
+    state.out.print(json.dumps(endpoint_def, ensure_ascii=False, indent=2))
 
 
 @model_app.command("run")

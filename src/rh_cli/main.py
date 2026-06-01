@@ -49,7 +49,7 @@ def check(ctx: typer.Context) -> None:
     state = ctx.obj if isinstance(ctx.obj, CliState) else CliState(console=console)
     result = check_account(state.api_key)
     if state.json_output:
-        state.out.print(json.dumps(result, ensure_ascii=True, indent=2))
+        state.out.print(json.dumps(result, ensure_ascii=False, indent=2))
         return
     status = result.get("status")
     if status == "ready":
@@ -100,7 +100,7 @@ def run() -> None:
     try:
         app()
     except RhCliError as exc:
-        console.print(json.dumps(exc.to_dict(), ensure_ascii=True, indent=2))
+        console.print(json.dumps(exc.to_dict(), ensure_ascii=False, indent=2))
         raise typer.Exit(exc.exit_code) from exc
 
 

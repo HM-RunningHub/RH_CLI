@@ -33,11 +33,7 @@ def list_apps(
         payload["days"] = days
 
     with RhHttpClient(resolved.value) as client:
-        response = client.post_json(
-            APP_LIST_URL,
-            payload,
-            headers={"Content-Type": "application/json", "Authorization": resolved.value},
-        )
+        response = client.post_json(APP_LIST_URL, payload)
     if response.get("code") != 0:
         raise RhCliError("LIST_FAILED", str(response.get("msg", "获取 AI 应用列表失败。")), detail=response)
     return response.get("data", {})
@@ -48,7 +44,10 @@ def get_node_info(*, api_key_arg: str | None, webapp_id_or_url: str) -> list[dic
     assert resolved.value is not None
     webapp_id = parse_webapp_id(webapp_id_or_url)
     with RhHttpClient(resolved.value) as client:
-        response = client.get_json(f"{NODE_INFO_URL}?apiKey={resolved.value}&webappId={webapp_id}")
+        response = client.get_json(
+            NODE_INFO_URL,
+            params={"apiKey": resolved.value, "webappId": webapp_id},
+        )
     if response.get("code") != 0:
         raise RhCliError("APP_INFO_FAILED", str(response.get("msg", "获取 AI 应用节点失败。")), detail=response)
     node_list = response.get("data", {}).get("nodeInfoList", [])
@@ -72,7 +71,10 @@ def run_app(
     webapp_id = parse_webapp_id(webapp_id_or_url)
 
     with RhHttpClient(resolved.value) as client:
-        response = client.get_json(f"{NODE_INFO_URL}?apiKey={resolved.value}&webappId={webapp_id}")
+        response = client.get_json(
+            NODE_INFO_URL,
+            params={"apiKey": resolved.value, "webappId": webapp_id},
+        )
         if response.get("code") != 0:
             raise RhCliError("APP_INFO_FAILED", str(response.get("msg", "获取 AI 应用节点失败。")), detail=response)
         node_list = response.get("data", {}).get("nodeInfoList", [])
